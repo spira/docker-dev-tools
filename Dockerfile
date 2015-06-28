@@ -29,7 +29,7 @@ ENV PHANTOM_JS_VERSION 1.9.8-linux-x86_64
 RUN apt-get install -y \
     git \
     libfreetype6 \
-    libfontconfig
+    libfontconfig \
     php5-cli \
     php5-mcrypt \
     php5-mongo \
