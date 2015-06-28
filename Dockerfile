@@ -53,7 +53,7 @@ RUN rm phantomjs-2.0.zip
 WORKDIR /opt/phantomjs/phantomjs-2.0/
 RUN pwd && ls -al
 
-RUN ./build.sh --jobs 1 --confirm --silent
+RUN ./build.sh --confirm --silent
 # Removing everything but the binary
 RUN ls -A | grep -v bin | xargs rm -rf
 # Symlink phantom so that we are able to run `phantomjs`
