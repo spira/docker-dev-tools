@@ -20,7 +20,23 @@ RUN which npm
 
 # Install npm global dependencies
 RUN npm install -g \
-    gulp bower phantomjs2
+    gulp bower
+
+# Then install phantomjs with :
+ENV PHANTOM_JS_VERSION 1.9.8-linux-x86_64
+
+# create dir to save phantom
+RUN mkdir -p /opt/phantomjs && \
+    cd /opt/phantomjs
+
+
+RUN wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
+  - tar -xvf /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C /opt/phantomjs
+
+# symlink to /usr/bin and check install
+RUN ln -s /opt/phantomjs/bin/phantomjs /usr/bin/phantomjs && \
+    rm /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 && \
+    which phantomjs && phantomjs --version
 
 # Install apt deps
 RUN apt-get install -y \
