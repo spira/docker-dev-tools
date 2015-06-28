@@ -41,7 +41,7 @@ RUN apt-get install -y \
     php5-gd
 
 # Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 
 # create dir to save phantom
@@ -49,7 +49,7 @@ RUN mkdir -p /opt/phantomjs && \
     cd /opt/phantomjs
 
 # download the file (this will take time)
-RUN curl -LO https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOM_JS_VERSION.tar.bz2
+RUN curl -LO# https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOM_JS_VERSION.tar.bz2
 RUN tar xjf phantomjs-$PHANTOM_JS_VERSION.tar.bz2
 
 # symlink to /usr/bin and check install
@@ -60,7 +60,7 @@ RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/ph
 RUN mkdir -p /opt/phpunit && \
     cd /opt/phpunit
 
-RUN wget https://phar.phpunit.de/phpunit.phar
+RUN curl -LO# https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar && \
     ln -s /opt/phpunit.phar /usr/bin/phpunit
 
@@ -85,7 +85,12 @@ RUN npm config set tmp /root/.tmp && \
     npm cache clear
 
 # Verify all install locations
-RUN which gulp bower hhvm npm composer phantomjs
+RUN which gulp
+RUN which bower
+RUN which hhvm
+RUN which npm
+RUN which composer
+RUN which phantomjs
 # Get all versions
 RUN npm --version && \
     bower --version && \
