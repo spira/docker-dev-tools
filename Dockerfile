@@ -43,9 +43,9 @@ RUN apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}
 # pulling source
 
 RUN wget https://github.com/ariya/phantomjs/archive/2.0.zip -O phantomjs-2.0.0-source.zip
-RUN unzip phantomjs-2.0.0-source.zip
+RUN unzip -qq phantomjs-2.0.0-source.zip
 RUN rm -rf /opt/phantomjs/phantomjs-2.0.0-source.zip
-RUN cd phantomjs-2.0.0/
+RUN cd phantomjs-2.0.0-source/
 
 RUN ./build.sh --jobs 1 --confirm --silent
 # Removing everything but the binary
