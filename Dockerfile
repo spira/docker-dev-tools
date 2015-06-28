@@ -14,7 +14,9 @@ RUN apt-get install -y curl && \
     nodejs \
     git \
     bzip2 \
-    build-essential
+    build-essential \
+    libfreetype6 \
+    libfontconfig
 
 RUN which npm
 
@@ -40,9 +42,6 @@ RUN ln -s /opt/phantomjs/bin/phantomjs /usr/bin/phantomjs && \
 
 # Install apt deps
 RUN apt-get install -y \
-    git \
-    libfreetype6 \
-    libfontconfig \
     php5-cli \
     php5-mcrypt \
     php5-mongo \
