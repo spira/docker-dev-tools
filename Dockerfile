@@ -24,21 +24,43 @@ RUN which npm
 RUN npm install -g \
     gulp bower
 
-# Then install phantomjs with :
-ENV PHANTOM_JS_VERSION 1.9.8-linux-x86_64
-
 # create dir to save phantom
 RUN mkdir -p /opt/phantomjs && \
     cd /opt/phantomjs
 
+# Dependencies we just need for building phantomjs
+ENV buildDependencies\
+  wget unzip python build-essential g++ flex bison gperf\
+  ruby perl libsqlite3-dev libssl-dev libpng-dev
 
-RUN wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
-RUN tar -xvf /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C /opt/phantomjs
+# Dependencies we need for running phantomjs
+ENV phantomJSDependencies\
+  libicu-dev libfontconfig1-dev libjpeg-dev libfreetype6 openssl
 
-# symlink to /usr/bin and check install
-RUN ln -s /opt/phantomjs/bin/phantomjs /usr/bin/phantomjs && \
-    rm /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 && \
-    which phantomjs && phantomjs --version
+# Installing phantomjs
+RUN \
+    # Installing dependencies
+        apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}\
+        # Downloading src, unzipping & removing zip
+    &&  wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.0.0-source.zip \
+    &&  unzip phantomjs-2.0.0-source.zip \
+    &&  rm -rf /opt/phantomjs/phantomjs-2.0.0-source.zip \
+        # Building phantom
+    &&  cd phantomjs-2.0.0/ \
+    &&  ./build.sh --jobs 1 --confirm --silent \
+        # Removing everything but the binary
+    &&  ls -A | grep -v bin | xargs rm -rf \
+        # Symlink phantom so that we are able to run `phantomjs`
+    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/share/phantomjs \
+    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/bin/phantomjs \
+    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/bin/phantomjs \
+        # Removing build dependencies, clean temporary files
+    &&  apt-get purge -yqq ${buildDependencies} \
+    &&  apt-get autoremove -yqq \
+    &&  apt-get clean \
+    &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+        # Checking if phantom works
+    &&  phantomjs -v
 
 # Install apt deps
 RUN apt-get install -y \
