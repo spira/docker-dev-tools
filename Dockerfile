@@ -44,10 +44,13 @@ RUN apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}
 RUN mkdir -p /opt/phantomjs && \
     cd /opt/phantomjs
 
+WORKDIR /opt/phantomjs
+
 RUN wget https://github.com/ariya/phantomjs/archive/2.0.zip -O phantomjs-2.0.zip
 RUN unzip -qq phantomjs-2.0.zip
-RUN rm -rf /opt/phantomjs/phantomjs-2.0.zip
-RUN pwd && ls -al && cd phantomjs-2.0/
+RUN rm phantomjs-2.0.zip
+WORKDIR /opt/phantomjs/phantomjs-2.0/
+RUN pwd && ls -al
 
 RUN ./build.sh --jobs 1 --confirm --silent
 # Removing everything but the binary
@@ -80,8 +83,8 @@ RUN apt-get install -y \
 RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 # Install phpunit globally
-RUN mkdir -p /opt/phpunit && \
-    cd /opt/phpunit
+RUN mkdir -p /opt/phpunit
+WORKDIR /opt/phpunit
 
 RUN curl -LO# https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar && \
