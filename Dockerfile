@@ -25,44 +25,21 @@ RUN which npm
 RUN npm install -g \
     gulp bower
 
-
-
-# Dependencies we just need for building phantomjs
-ENV buildDependencies\
-  wget unzip python build-essential g++ flex bison gperf\
-  ruby perl libsqlite3-dev libssl-dev libpng-dev
-
-# Dependencies we need for running phantomjs
-ENV phantomJSDependencies\
-  libicu-dev libfontconfig1-dev libjpeg-dev libfreetype6 openssl
-
-# Installing phantomjs
-# Installing dependencies
-RUN apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}
-# pulling source
+# Then install phantomjs with :
+ENV PHANTOM_JS_VERSION 1.9.8-linux-x86_64
 
 # create dir to save phantom
-RUN mkdir -p /opt/phantomjs && \
-    cd /opt/phantomjs
-
+RUN mkdir -p /opt/phantomjs
 WORKDIR /opt/phantomjs
 
-RUN wget https://github.com/ariya/phantomjs/archive/2.0.zip -O phantomjs-2.0.zip
-RUN unzip -qq phantomjs-2.0.zip
-RUN rm phantomjs-2.0.zip
-WORKDIR /opt/phantomjs/phantomjs-2.0/
-RUN pwd && ls -al
+# download the file (this will take time)
+RUN curl -LO https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOM_JS_VERSION.tar.bz2
+RUN tar xjf phantomjs-$PHANTOM_JS_VERSION.tar.bz2
 
-RUN ./build.sh --confirm --silent
-# Removing everything but the binary
-RUN ls -A | grep -v bin | xargs rm -rf
-# Symlink phantom so that we are able to run `phantomjs`
-RUN ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/local/share/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/local/bin/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/bin/phantomjs
-
-# Checking if phantom works
-RUN phantomjs -v
+# symlink to /usr/bin and check install
+RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/phantomjs && \
+    rm phantomjs-$PHANTOM_JS_VERSION.tar.bz2 && \
+    which phantomjs && phantomjs --version
 
 # Install apt deps
 RUN apt-get update -y && \
