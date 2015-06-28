@@ -54,7 +54,8 @@ RUN tar xjf phantomjs-$PHANTOM_JS_VERSION.tar.bz2
 
 # symlink to /usr/bin and check install
 RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/phantomjs && \
-    rm phantomjs-$PHANTOM_JS_VERSION.tar.bz2
+    rm phantomjs-$PHANTOM_JS_VERSION.tar.bz2 && \
+    which phantomjs && phantomjs --version
 
 # Install phpunit globally
 RUN mkdir -p /opt/phpunit && \
@@ -85,19 +86,21 @@ RUN npm config set tmp /root/.tmp && \
     npm cache clear
 
 # Verify all install locations
-RUN which gulp
-RUN which bower
-RUN which hhvm
 RUN which npm
+RUN which bower
+RUN which gulp
+RUN which hhvm
+RUN which phpunit
 RUN which composer
 RUN which phantomjs
 # Get all versions
 RUN npm --version && \
     bower --version && \
     gulp --version && \
-    phantomjs --version && \
     hhvm --version && \
-    composer --version
+    phpunit --version && \
+    composer --version && \
+    phantomjs --version
 
 WORKDIR /data
 
