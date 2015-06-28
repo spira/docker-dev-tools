@@ -38,29 +38,29 @@ ENV phantomJSDependencies\
   libicu-dev libfontconfig1-dev libjpeg-dev libfreetype6 openssl
 
 # Installing phantomjs
-RUN \
-    # Installing dependencies
-        apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}\
-        # Downloading src, unzipping & removing zip
-    &&  wget http://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.0.0-source.zip \
-    &&  unzip phantomjs-2.0.0-source.zip \
-    &&  rm -rf /opt/phantomjs/phantomjs-2.0.0-source.zip \
-        # Building phantom
-    &&  cd phantomjs-2.0.0/ \
-    &&  ./build.sh --jobs 1 --confirm --silent \
-        # Removing everything but the binary
-    &&  ls -A | grep -v bin | xargs rm -rf \
-        # Symlink phantom so that we are able to run `phantomjs`
-    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/share/phantomjs \
+# Installing dependencies
+RUN apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}
+# pulling source
+
+RUN wget https://github.com/ariya/phantomjs/archive/2.0.zip -O phantomjs-2.0.0-source.zip
+RUN unzip phantomjs-2.0.0-source.zip
+RUN rm -rf /opt/phantomjs/phantomjs-2.0.0-source.zip
+RUN cd phantomjs-2.0.0/
+
+RUN ./build.sh --jobs 1 --confirm --silent
+# Removing everything but the binary
+RUN ls -A | grep -v bin | xargs rm -rf
+# Symlink phantom so that we are able to run `phantomjs`
+RUN ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/share/phantomjs \
     &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/bin/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/bin/phantomjs \
-        # Removing build dependencies, clean temporary files
-    &&  apt-get purge -yqq ${buildDependencies} \
+    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/bin/phantomjs
+# Removing build dependencies, clean temporary files
+RUN apt-get purge -yqq ${buildDependencies} \
     &&  apt-get autoremove -yqq \
     &&  apt-get clean \
-    &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-        # Checking if phantom works
-    &&  phantomjs -v
+    &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Checking if phantom works
+RUN phantomjs -v
 
 # Install apt deps
 RUN apt-get install -y \
