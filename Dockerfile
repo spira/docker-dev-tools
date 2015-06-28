@@ -42,7 +42,7 @@ RUN \
     # Installing dependencies
         apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}\
         # Downloading src, unzipping & removing zip
-    &&  wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.0.0-source.zip \
+    &&  wget http://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.0.0-source.zip \
     &&  unzip phantomjs-2.0.0-source.zip \
     &&  rm -rf /opt/phantomjs/phantomjs-2.0.0-source.zip \
         # Building phantom
