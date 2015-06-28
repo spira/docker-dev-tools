@@ -62,7 +62,7 @@ RUN mkdir -p /opt/phpunit && \
 
 RUN wget https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar && \
-    ls -s /opt/phpunit.phar /usr/bin/phpunit
+    ln -s /opt/phpunit.phar /usr/bin/phpunit
 
 # Configure hhvm
 ADD config/xdebug.ini /opt/etc/xdebug.ini
