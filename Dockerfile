@@ -24,9 +24,7 @@ RUN which npm
 RUN npm install -g \
     gulp bower
 
-# create dir to save phantom
-RUN mkdir -p /opt/phantomjs && \
-    cd /opt/phantomjs
+
 
 # Dependencies we just need for building phantomjs
 ENV buildDependencies\
@@ -42,18 +40,22 @@ ENV phantomJSDependencies\
 RUN apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}
 # pulling source
 
+# create dir to save phantom
+RUN mkdir -p /opt/phantomjs && \
+    cd /opt/phantomjs
+
 RUN wget https://github.com/ariya/phantomjs/archive/2.0.zip -O phantomjs-2.0.0-source.zip
 RUN unzip -qq phantomjs-2.0.0-source.zip
 RUN rm -rf /opt/phantomjs/phantomjs-2.0.0-source.zip
-RUN cd phantomjs-2.0.0-source/
+RUN ls -al && cd phantomjs-2.0/
 
 RUN ./build.sh --jobs 1 --confirm --silent
 # Removing everything but the binary
 RUN ls -A | grep -v bin | xargs rm -rf
 # Symlink phantom so that we are able to run `phantomjs`
-RUN ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/share/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/bin/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/bin/phantomjs
+RUN ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/local/share/phantomjs \
+    &&  ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/local/bin/phantomjs \
+    &&  ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/bin/phantomjs
 # Removing build dependencies, clean temporary files
 RUN apt-get purge -yqq ${buildDependencies} \
     &&  apt-get autoremove -yqq \
