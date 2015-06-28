@@ -64,6 +64,15 @@ RUN wget https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar && \
     ls -s /opt/phpunit.phar /usr/bin/phpunit
 
+# Configure hhvm
+ADD config/xdebug.ini /opt/etc/xdebug.ini
+ADD config/errors.ini /opt/etc/errors.ini
+RUN && \
+    cat /opt/etc/xdebug.ini >> /etc/hhvm/server.ini && \
+    cat /opt/etc/errors.ini >> /etc/hhvm/server.ini && \
+    cat /opt/etc/xdebug.ini >> /etc/hhvm/php.ini && \
+    cat /opt/etc/errors.ini >> /etc/hhvm/php.ini
+
 # Clear apt-get data
 RUN apt-get remove --purge curl -y && \
     apt-get clean
