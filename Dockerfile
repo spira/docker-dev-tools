@@ -31,7 +31,7 @@ RUN mkdir -p /opt/phantomjs && \
 
 
 RUN wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
-  - tar -xvf /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C /opt/phantomjs
+RUN tar -xvf /opt/phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C /opt/phantomjs
 
 # symlink to /usr/bin and check install
 RUN ln -s /opt/phantomjs/bin/phantomjs /usr/bin/phantomjs && \
