@@ -16,7 +16,8 @@ RUN apt-get install -y curl && \
     bzip2 \
     build-essential \
     libfreetype6 \
-    libfontconfig
+    libfontconfig \
+    libpq-dev
 
 RUN which npm
 
@@ -59,16 +60,15 @@ RUN ls -A | grep -v bin | xargs rm -rf
 RUN ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/local/share/phantomjs \
     &&  ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/local/bin/phantomjs \
     &&  ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/bin/phantomjs
-# Removing build dependencies, clean temporary files
-RUN apt-get purge -yqq ${buildDependencies} \
-    &&  apt-get autoremove -yqq \
-    &&  apt-get clean \
-    &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Checking if phantom works
 RUN phantomjs -v
 
 # Install apt deps
-RUN apt-get install -y \
+RUN apt-get update -y && \
+    apt-get install -y \
+    curl \
+    git \
     php5-cli \
     php5-mcrypt \
     php5-mongo \
@@ -82,13 +82,8 @@ RUN apt-get install -y \
 # Install composer
 RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-# Install phpunit globally
-RUN mkdir -p /opt/phpunit
-WORKDIR /opt/phpunit
-
-RUN curl -LO# https://phar.phpunit.de/phpunit.phar
-RUN chmod +x phpunit.phar && \
-    ln -s /opt/phpunit.phar /usr/bin/phpunit
+# install hhvm-pgsql
+RUN hhvm-ext-install dstelter/hhvm-pgsql
 
 # Configure hhvm
 ADD config/xdebug.ini /opt/etc/xdebug.ini
@@ -99,15 +94,12 @@ RUN cat /opt/etc/xdebug.ini >> /etc/hhvm/server.ini && \
     cat /opt/etc/xdebug.ini >> /etc/hhvm/php.ini && \
     cat /opt/etc/errors.ini >> /etc/hhvm/php.ini
 
-# Clear apt-get data
-RUN apt-get remove --purge curl -y && \
-    apt-get clean
-
 # Clean everything
 RUN npm config set tmp /root/.tmp && \
     npm cache clean && \
+    apt-get autoremove -yqq && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     npm cache clear
 
 # Verify all install locations
@@ -115,7 +107,6 @@ RUN which npm
 RUN which bower
 RUN which gulp
 RUN which hhvm
-RUN which phpunit
 RUN which composer
 RUN which phantomjs
 # Get all versions
@@ -123,7 +114,6 @@ RUN npm --version && \
     bower --version && \
     gulp --version && \
     hhvm --version && \
-    phpunit --version && \
     composer --version && \
     phantomjs --version
 
