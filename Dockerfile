@@ -20,24 +20,7 @@ RUN which npm
 
 # Install npm global dependencies
 RUN npm install -g \
-    gulp bower
-
-# Then install phantomjs with :
-ENV PHANTOM_JS_VERSION 1.9.8-linux-x86_64
-
-# create dir to save phantom
-RUN mkdir -p /opt/phantomjs && \
-    cd /opt/phantomjs
-
-# download the file (this will take time)
-RUN echo $PHANTOM_JS_VERSION
-RUN curl -LO# https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOM_JS_VERSION.tar.bz2
-RUN tar xjf phantomjs-$PHANTOM_JS_VERSION.tar.bz2
-
-# symlink to /usr/bin and check install
-RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/phantomjs && \
-    rm phantomjs-$PHANTOM_JS_VERSION.tar.bz2 && \
-    which phantomjs && phantomjs --version
+    gulp bower phantomjs2
 
 # Install apt deps
 RUN apt-get install -y \
