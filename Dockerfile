@@ -2,8 +2,7 @@ FROM estebanmatias92/hhvm:3.5-fastcgi
 
 MAINTAINER "Zak Henry" <zak.henry@gmail.com>
 
-RUN mkdir -p /data
-VOLUME ["/data"]
+RUN mkdir -p ${DATA_ROOT:-/data}
 
 RUN apt-get update
 
@@ -117,7 +116,7 @@ RUN npm --version && \
     composer --version && \
     phantomjs --version
 
-WORKDIR /data
+WORKDIR ${DATA_ROOT:-/data}
 
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["ls", "-alh", "/data"]
+CMD ["ls", "-alh", "${DATA_ROOT:-/data}"]
