@@ -116,7 +116,8 @@ RUN npm --version && \
     composer --version && \
     phantomjs --version
 
-WORKDIR ${DATA_ROOT:-/data}
+#todo change WORKDIR to ${DATA_ROOT:-/data} syntax when supported
+WORKDIR ${DATA_ROOT}
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["ls", "-alh", "${DATA_ROOT:-/data}"]
