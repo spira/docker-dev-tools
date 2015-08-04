@@ -46,19 +46,19 @@ RUN mkdir -p /opt/phantomjs && \
 
 WORKDIR /opt/phantomjs
 
-RUN wget https://github.com/ariya/phantomjs/archive/2.0.zip -O phantomjs-2.0.zip
-RUN unzip -qq phantomjs-2.0.zip
-RUN rm phantomjs-2.0.zip
-WORKDIR /opt/phantomjs/phantomjs-2.0/
+RUN wget https://github.com/ariya/phantomjs/archive/2.0.0.zip -O phantomjs-2.0.0.zip
+RUN unzip -qq phantomjs-2.0.0.zip
+RUN rm phantomjs-2.0.0.zip
+WORKDIR /opt/phantomjs/phantomjs-2.0.0/
 RUN pwd && ls -al
 
 RUN ./build.sh --confirm --silent
 # Removing everything but the binary
 RUN ls -A | grep -v bin | xargs rm -rf
 # Symlink phantom so that we are able to run `phantomjs`
-RUN ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/local/share/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/local/bin/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0/bin/phantomjs /usr/bin/phantomjs
+RUN ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/share/phantomjs \
+    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/bin/phantomjs \
+    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/bin/phantomjs
 
 # Checking if phantom works
 RUN phantomjs -v
