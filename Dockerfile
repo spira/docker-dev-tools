@@ -1,4 +1,4 @@
-FROM estebanmatias92/hhvm:3.5-fastcgi
+FROM estebanmatias92/hhvm:3.8-cli
 
 MAINTAINER "Zak Henry" <zak.henry@gmail.com>
 
@@ -74,7 +74,7 @@ RUN apt-get update -y && \
 RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 # install hhvm-pgsql
-RUN hhvm-ext-install dstelter/hhvm-pgsql
+RUN hhvm-ext-install spira/hhvm-pgsql && echo "PDO extension installed"
 
 # Configure hhvm
 ADD config/xdebug.ini /opt/etc/xdebug.ini
