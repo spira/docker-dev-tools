@@ -24,10 +24,9 @@ RUN apt-get install -y curl && \
     libfontconfig \
     unzip \
     vim vim-rt \
-    libmcrypt-dev \
-    libpq-dev libpq5
+    libmcrypt-dev
 
-RUN docker-php-ext-install mcrypt pgsql
+RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql
 
 RUN which npm
 
