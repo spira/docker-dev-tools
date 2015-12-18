@@ -28,6 +28,17 @@ RUN apt-get install -y curl && \
 
 RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql sockets
 
+ENV XDEBUG_VERSION xdebug-2.4.0rc3
+RUN cd /tmp && \
+    curl -sL -o xdebug.tgz http://xdebug.org/files/$XDEBUG_VERSION.tgz && \
+    tar -xvzf $XDEBUG_VERSION.tgz && \
+    cd xdebug* && \
+    phpize && \
+    ./configure && make && \
+    cp modules/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20151012 && \
+    echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so' >> /usr/local/etc/php/php.ini && \
+    rm -rf /tmp/xdebug*
+
 RUN which npm
 
 # Install npm global dependencies
