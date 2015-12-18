@@ -1,4 +1,4 @@
-FROM estebanmatias92/hhvm:3.8-cli
+FROM php:7.0-cli
 
 MAINTAINER "Zak Henry" <zak.henry@gmail.com>
 
@@ -73,18 +73,6 @@ RUN apt-get update -y && \
 # Install composer
 RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-# install hhvm-pgsql
-RUN hhvm-ext-install spira/hhvm-pgsql && echo "PDO extension installed"
-
-# Configure hhvm
-ADD config/xdebug.ini /opt/etc/xdebug.ini
-ADD config/errors.ini /opt/etc/errors.ini
-
-RUN cat /opt/etc/xdebug.ini >> /etc/hhvm/server.ini && \
-    cat /opt/etc/errors.ini >> /etc/hhvm/server.ini && \
-    cat /opt/etc/xdebug.ini >> /etc/hhvm/php.ini && \
-    cat /opt/etc/errors.ini >> /etc/hhvm/php.ini
-
 # Clean everything
 RUN npm config set tmp /root/.tmp && \
     npm cache clean && \
@@ -97,14 +85,14 @@ RUN npm config set tmp /root/.tmp && \
 RUN which npm
 RUN which bower
 RUN which gulp
-RUN which hhvm
+RUN which php
 RUN which composer
 RUN which phantomjs
 # Get all versions
 RUN npm --version && \
     bower --version && \
     gulp --version && \
-    hhvm --version && \
+    php --version && \
     composer --version && \
     phantomjs --version
 
