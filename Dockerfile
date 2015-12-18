@@ -23,7 +23,7 @@ RUN apt-get install -y curl && \
     libfreetype6 \
     libfontconfig \
     unzip \
-    vim vim-rt \
+    vim \
     libmcrypt-dev
 
 RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql
