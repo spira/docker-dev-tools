@@ -22,7 +22,12 @@ RUN apt-get install -y curl && \
     libjpeg-dev \
     libfreetype6 \
     libfontconfig \
-    unzip
+    unzip \
+    vim vim-rt \
+    libmcrypt-dev \
+    libpq-dev libpq5
+
+RUN docker-php-ext-install mcrypt pgsql
 
 RUN which npm
 
