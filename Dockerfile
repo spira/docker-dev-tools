@@ -26,7 +26,7 @@ RUN apt-get install -y curl && \
     vim \
     libmcrypt-dev
 
-RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql sockets
+RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql sockets opcache
 
 ENV XDEBUG_VERSION xdebug-2.4.0rc3
 RUN cd /tmp && \
