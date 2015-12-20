@@ -31,7 +31,7 @@ RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql sockets opcache
 ENV XDEBUG_VERSION xdebug-2.4.0rc3
 RUN cd /tmp && \
     curl -sL -o xdebug.tgz http://xdebug.org/files/$XDEBUG_VERSION.tgz && \
-    tar -xvzf $XDEBUG_VERSION.tgz && \
+    tar -xvzf xdebug.tgz && \
     cd xdebug* && \
     phpize && \
     ./configure && make && \
