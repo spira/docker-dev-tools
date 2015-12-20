@@ -70,21 +70,6 @@ RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/ph
 
 RUN which phantomjs && phantomjs --version
 
-# Install apt deps
-RUN apt-get update -y && \
-    apt-get install -y \
-    curl \
-    git \
-    php5-cli \
-    php5-mcrypt \
-    php5-mongo \
-    php5-mssql \
-    php5-mysqlnd \
-    php5-pgsql \
-    php5-redis \
-    php5-sqlite \
-    php5-gd
-
 # Install composer
 RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
