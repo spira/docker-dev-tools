@@ -1,8 +1,9 @@
-FROM estebanmatias92/hhvm:3.5-fastcgi
+FROM php:7.0-cli
 
 MAINTAINER "Zak Henry" <zak.henry@gmail.com>
 
-RUN mkdir -p ${DATA_ROOT:-/data}
+RUN mkdir -p /data
+VOLUME ["/data"]
 
 RUN apt-get update
 
@@ -16,7 +17,27 @@ RUN apt-get install -y curl && \
     build-essential \
     libfreetype6 \
     libfontconfig \
-    libpq-dev
+    libpq-dev \
+    libicu52 \
+    libjpeg-dev \
+    libfreetype6 \
+    libfontconfig \
+    unzip \
+    vim \
+    libmcrypt-dev
+
+RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql sockets opcache
+
+ENV XDEBUG_VERSION xdebug-2.4.0rc3
+RUN cd /tmp && \
+    curl -sL -o xdebug.tgz http://xdebug.org/files/$XDEBUG_VERSION.tgz && \
+    tar -xvzf xdebug.tgz && \
+    cd xdebug* && \
+    phpize && \
+    ./configure && make && \
+    cp modules/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20151012 && \
+    echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so' >> /usr/local/etc/php/php.ini && \
+    rm -rf /tmp/xdebug*
 
 RUN which npm
 
@@ -24,76 +45,43 @@ RUN which npm
 RUN npm install -g \
     gulp bower
 
-
-
-# Dependencies we just need for building phantomjs
-ENV buildDependencies\
-  wget unzip python build-essential g++ flex bison gperf\
-  ruby perl libsqlite3-dev libssl-dev libpng-dev
-
-# Dependencies we need for running phantomjs
-ENV phantomJSDependencies\
-  libicu-dev libfontconfig1-dev libjpeg-dev libfreetype6 openssl
-
-# Installing phantomjs
-# Installing dependencies
-RUN apt-get install -fyqq ${buildDependencies} ${phantomJSDependencies}
-# pulling source
+# Then install phantomjs with :
+ENV PHANTOM_JS_VERSION 2.0.0-debian-x86_64
 
 # create dir to save phantom
-RUN mkdir -p /opt/phantomjs && \
-    cd /opt/phantomjs
-
+RUN mkdir -p /opt/phantomjs
 WORKDIR /opt/phantomjs
 
-RUN wget https://github.com/ariya/phantomjs/archive/2.0.0.zip -O phantomjs-2.0.0.zip
-RUN unzip -qq phantomjs-2.0.0.zip
-RUN rm phantomjs-2.0.0.zip
-WORKDIR /opt/phantomjs/phantomjs-2.0.0/
-RUN pwd && ls -al
 
-RUN ./build.sh --confirm --silent
-# Removing everything but the binary
-RUN ls -A | grep -v bin | xargs rm -rf
-# Symlink phantom so that we are able to run `phantomjs`
-RUN ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/share/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/local/bin/phantomjs \
-    &&  ln -s /opt/phantomjs/phantomjs-2.0.0/bin/phantomjs /usr/bin/phantomjs
+# download the file (this will take time)
+RUN mkdir -p /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin
+RUN curl -sL -o /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.zip https://github.com/jakemauer/phantomjs/releases/download/2.0.0-debian-bin/phantomjs-$PHANTOM_JS_VERSION.zip
+RUN unzip /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.zip -d /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin
+RUN rm -f /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.zip
+RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/phantomjs
 
-# Checking if phantom works
-RUN phantomjs -v
+# @todo restore the official bitbucket.org/ariya version when they release phantom2
+# RUN curl -LO https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOM_JS_VERSION.tar.bz2
+# RUN tar xjf phantomjs-$PHANTOM_JS_VERSION.tar.bz2
 
-# Install apt deps
-RUN apt-get update -y && \
-    apt-get install -y \
-    curl \
-    git \
-    php5-cli \
-    php5-mcrypt \
-    php5-mongo \
-    php5-mssql \
-    php5-mysqlnd \
-    php5-pgsql \
-    php5-redis \
-    php5-sqlite \
-    php5-gd
+# symlink to /usr/bin and check install
+# RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/phantomjs && \
+#    rm phantomjs-$PHANTOM_JS_VERSION.tar.bz2
+
+RUN which phantomjs && phantomjs --version
 
 # Install composer
 RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-# install hhvm-pgsql
-RUN hhvm-ext-install dstelter/hhvm-pgsql
-
-# Configure hhvm
+# Configure php
+ADD config/memory.ini /opt/etc/memory.ini
 ADD config/xdebug.ini /opt/etc/xdebug.ini
-ADD config/errors.ini /opt/etc/errors.ini
 
 RUN sed -i "s|%data-root%|${DATA_ROOT:-/data}|" /opt/etc/xdebug.ini
 
-RUN cat /opt/etc/xdebug.ini >> /etc/hhvm/server.ini && \
-    cat /opt/etc/errors.ini >> /etc/hhvm/server.ini && \
-    cat /opt/etc/xdebug.ini >> /etc/hhvm/php.ini && \
-    cat /opt/etc/errors.ini >> /etc/hhvm/php.ini
+RUN cat /opt/etc/memory.ini >> /usr/local/etc/php/conf.d/memory.ini && \
+    cat /opt/etc/xdebug.ini >> /usr/local/etc/php/conf.d/xdebug.ini
+
 
 # Clean everything
 RUN npm config set tmp /root/.tmp && \
@@ -107,19 +95,18 @@ RUN npm config set tmp /root/.tmp && \
 RUN which npm
 RUN which bower
 RUN which gulp
-RUN which hhvm
+RUN which php
 RUN which composer
 RUN which phantomjs
 # Get all versions
 RUN npm --version && \
     bower --version && \
     gulp --version && \
-    hhvm --version && \
+    php --version && \
     composer --version && \
     phantomjs --version
 
-#todo change WORKDIR to ${DATA_ROOT:-/data} syntax when supported
-WORKDIR ${DATA_ROOT}
+WORKDIR /data
 
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["ls", "-alh", "${DATA_ROOT:-/data}"]
+CMD ["ls", "-alh", "/data"]
