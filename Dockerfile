@@ -9,7 +9,7 @@ RUN apt-get update
 
 # Then install node with:
 RUN apt-get install -y curl && \
-    curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
+    curl -sL https://deb.nodesource.com/setup_5.x | bash - && \
     apt-get install -y \
     nodejs \
     git \
