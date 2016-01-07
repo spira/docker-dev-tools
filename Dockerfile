@@ -8,9 +8,8 @@ VOLUME ["/data"]
 RUN apt-get update
 
 # Then install node with:
-RUN apt-get install -y curl && \
-    curl -sL https://deb.nodesource.com/setup_5.x | bash - && \
-    apt-get install -y \
+RUN apt-get install -y \
+    curl \
     nodejs \
     git \
     bzip2 \
