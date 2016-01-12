@@ -5,7 +5,10 @@ MAINTAINER "Zak Henry" <zak.henry@gmail.com>
 RUN mkdir -p /data
 VOLUME ["/data"]
 
-RUN apt-get update
+#add add-apt-repository tool then add ppa sources and update
+RUN apt-get install python-software-properties software-properties-common && \
+    add-apt-repository ppa:git-core/ppa -y && \
+    apt-get update
 
 # Then install node with:
 RUN apt-get install -y curl && \
@@ -98,13 +101,16 @@ RUN which gulp
 RUN which php
 RUN which composer
 RUN which phantomjs
+RUN which git
 # Get all versions
-RUN npm --version && \
+RUN node --version && \
+    npm --version && \
     bower --version && \
     gulp --version && \
     php --version && \
     composer --version && \
-    phantomjs --version
+    phantomjs --version && \
+    git --version
 
 WORKDIR /data
 
