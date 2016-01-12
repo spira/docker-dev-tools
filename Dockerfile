@@ -5,10 +5,11 @@ MAINTAINER "Zak Henry" <zak.henry@gmail.com>
 RUN mkdir -p /data
 VOLUME ["/data"]
 
-#add add-apt-repository tool then add ppa sources and update
-RUN apt-get install python-software-properties software-properties-common && \
-    add-apt-repository ppa:git-core/ppa -y && \
-    apt-get update
+
+#add custom ppa for git so that we get the latest version
+RUN printf "deb http://ppa.launchpad.net/git-core/ppa/ubuntu precise main\ndeb-src http://ppa.launchpad.net/git-core/ppa/ubuntu precise main" >> /etc/apt/sources.list.d/git-core.list && \
+    apt-get update || true && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A1715D88E1DF1F24
 
 # Then install node with:
 RUN apt-get install -y curl && \
