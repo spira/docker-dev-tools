@@ -58,7 +58,6 @@ ENV PHANTOM_JS_VERSION 2.1.1-linux-x86_64
 #RUN mkdir -p /opt/phantomjs
 #WORKDIR /opt/phantomjs
 
-
 # download the file (this will take time)
 #RUN mkdir -p /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin
 #RUN curl -sL -o /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.zip https://github.com/jakemauer/phantomjs/releases/download/2.0.0-debian-bin/phantomjs-$PHANTOM_JS_VERSION.zip
