@@ -33,17 +33,6 @@ RUN apt-get install -y curl && \
 
 RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql sockets opcache soap
 
-ENV XDEBUG_VERSION xdebug-2.4.0rc3
-RUN cd /tmp && \
-    curl -sL -o xdebug.tgz http://xdebug.org/files/$XDEBUG_VERSION.tgz && \
-    tar -xvzf xdebug.tgz && \
-    cd xdebug* && \
-    phpize && \
-    ./configure && make && \
-    cp modules/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20151012 && \
-    echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so' >> /usr/local/etc/php/php.ini && \
-    rm -rf /tmp/xdebug*
-
 RUN which npm
 
 # Install npm global dependencies
@@ -80,13 +69,7 @@ RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin 
 
 # Configure php
 ADD config/memory.ini /opt/etc/memory.ini
-ADD config/xdebug.ini /opt/etc/xdebug.ini
-
-RUN sed -i "s|%data-root%|${DATA_ROOT:-/data}|" /opt/etc/xdebug.ini
-
-RUN cat /opt/etc/memory.ini >> /usr/local/etc/php/conf.d/memory.ini && \
-    cat /opt/etc/xdebug.ini >> /usr/local/etc/php/conf.d/xdebug.ini
-
+RUN cat /opt/etc/memory.ini >> /usr/local/etc/php/conf.d/memory.ini
 
 # Clean everything
 RUN npm config set tmp /root/.tmp && \
