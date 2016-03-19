@@ -8,13 +8,14 @@ VOLUME ["/data"]
 
 #add custom ppa for git so that we get the latest version
 RUN printf "deb http://ppa.launchpad.net/git-core/ppa/ubuntu precise main\ndeb-src http://ppa.launchpad.net/git-core/ppa/ubuntu precise main" >> /etc/apt/sources.list.d/git-core.list && \
-    apt-get update || true && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A1715D88E1DF1F24
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1DF1F24  && \
+    apt-get update || true
+
 
 # Then install node with:
 RUN apt-get install -y curl && \
     curl -sL https://deb.nodesource.com/setup_5.x | bash - && \
-    apt-get install -y \
+    apt-get install -y --force-yes \
     nodejs \
     git \
     bzip2 \
@@ -41,7 +42,7 @@ RUN cd /tmp && \
     phpize && \
     ./configure && make && \
     cp modules/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20151012 && \
-    echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so' >> /usr/local/etc/php/php.ini && \
+    echo 'zend_extension = /usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     rm -rf /tmp/xdebug*
 
 RUN which npm
@@ -95,6 +96,9 @@ RUN npm config set tmp /root/.tmp && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     npm cache clear
+
+RUN printf "#!/bin/bash\nmv /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini.disabled" >> /usr/local/bin/xdebug-off
+RUN chmod +x /usr/local/bin/xdebug-off
 
 # Verify all install locations
 RUN which npm
