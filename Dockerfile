@@ -98,7 +98,13 @@ RUN npm config set tmp /root/.tmp && \
     npm cache clear
 
 RUN printf "#!/bin/bash\nmv /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini.disabled" >> /usr/local/bin/xdebug-off
+RUN printf "#!/bin/bash\nmv /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini.disabled /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini" >> /usr/local/bin/xdebug-on
 RUN chmod +x /usr/local/bin/xdebug-off
+RUN chmod +x /usr/local/bin/xdebug-on
+
+RUN mv /usr/bin/composer /usr/bin/composer-actual
+RUN printf '#!/bin/bash\nxdebug-off;/usr/bin/composer-actual "$@";xdebug-on' >> /usr/bin/composer && chmod +x /usr/bin/composer
+
 
 # Verify all install locations
 RUN which npm
