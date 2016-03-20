@@ -15,7 +15,7 @@ RUN printf "deb http://ppa.launchpad.net/git-core/ppa/ubuntu precise main\ndeb-s
 # Then install node with:
 RUN apt-get install -y curl && \
     curl -sL https://deb.nodesource.com/setup_5.x | bash - && \
-    apt-get install -y --force-yes \
+    apt-get install -y \
     nodejs \
     git \
     bzip2 \
