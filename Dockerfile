@@ -30,9 +30,11 @@ RUN apt-get install -y curl && \
     unzip \
     vim \
     libmcrypt-dev \
-    libxml2-dev
+    libxml2-dev \
+    libpng12-dev
 
-RUN docker-php-ext-install mcrypt pdo_pgsql mbstring pdo_mysql sockets opcache soap
+RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
+RUN docker-php-ext-install mcrypt gd pdo_pgsql mbstring pdo_mysql sockets opcache soap
 
 ENV XDEBUG_VERSION xdebug-2.4.0rc3
 RUN cd /tmp && \
