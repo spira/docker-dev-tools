@@ -54,7 +54,7 @@ RUN npm install -g \
     gulp bower
 
 # Then install phantomjs with :
-ENV PHANTOM_JS_VERSION 2.0.0-debian-x86_64
+ENV PHANTOM_JS_VERSION 2.1.1
 
 # create dir to save phantom
 RUN mkdir -p /opt/phantomjs
@@ -63,20 +63,11 @@ WORKDIR /opt/phantomjs
 
 # download the file (this will take time)
 RUN mkdir -p /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin
-RUN curl -sL -o /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.zip https://github.com/jakemauer/phantomjs/releases/download/2.0.0-debian-bin/phantomjs-$PHANTOM_JS_VERSION.zip
-RUN unzip /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.zip -d /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin
-RUN rm -f /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.zip
-RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/phantomjs
+RUN curl -sL -o /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+RUN tar jxf /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION.bz2 -C /opt/phantomjs --strip-components 1
+RUN ln -s /opt/phantomjs/bin/phantomjs /usr/bin/phantomjs
 
-# @todo restore the official bitbucket.org/ariya version when they release phantom2
-# RUN curl -LO https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOM_JS_VERSION.tar.bz2
-# RUN tar xjf phantomjs-$PHANTOM_JS_VERSION.tar.bz2
-
-# symlink to /usr/bin and check install
-# RUN ln -s /opt/phantomjs/phantomjs-$PHANTOM_JS_VERSION/bin/phantomjs /usr/bin/phantomjs && \
-#    rm phantomjs-$PHANTOM_JS_VERSION.tar.bz2
-
-RUN which phantomjs && phantomjs --version
+RUN phantomjs --version
 
 # Install composer
 RUN curl -sS# https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
